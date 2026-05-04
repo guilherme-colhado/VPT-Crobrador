@@ -3,9 +3,10 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
-const { all, get, initializeDatabase, run } = require("./db");
 
 loadLocalEnv();
+
+const { all, get, initializeDatabase, run } = require("./db");
 
 const app = express();
 
@@ -16,9 +17,19 @@ const PORT = Number(process.env.PORT || 3001);
 const ZAPI_INSTANCE_ID = process.env.ZAPI_INSTANCE_ID;
 const ZAPI_INSTANCE_TOKEN = process.env.ZAPI_INSTANCE_TOKEN;
 const ZAPI_CLIENT_TOKEN = process.env.ZAPI_CLIENT_TOKEN;
+let databaseReadyPromise;
 
 app.use(cors());
 app.use(express.json());
+app.use(async (_req, res, next) => {
+  try {
+    await ensureDatabaseReady();
+    next();
+  } catch (error) {
+    console.error("Erro ao preparar banco:", error);
+    res.status(500).json({ error: "Erro ao preparar banco." });
+  }
+});
 
 function loadLocalEnv() {
   const envPath = path.join(__dirname, ".env");
@@ -522,13 +533,33 @@ function configureFrontendHosting() {
   });
 }
 
-async function startServer() {
-  await initializeDatabase();
+function ensureDatabaseReady() {
+  if (!databaseReadyPromise) {
+    databaseReadyPromise = initializeDatabase();
+  }
+
+  return databaseReadyPromise;
+}
+
+async function bootstrapApp() {
+  await ensureDatabaseReady();
   startAutomaticReminderLoop();
   configureFrontendHosting();
+}
+
+async function startServer() {
+  await bootstrapApp();
   app.listen(PORT, () => console.log(`Server rodando na porta ${PORT}`));
 }
 
-startServer().catch((error) => {
-  console.error("Erro ao iniciar servidor:", error);
-});
+if (process.env.VERCEL !== "1") {
+  startServer().catch((error) => {
+    console.error("Erro ao iniciar servidor:", error);
+  });
+} else {
+  bootstrapApp().catch((error) => {
+    console.error("Erro ao preparar app na Vercel:", error);
+  });
+}
+
+module.exports = app;
