@@ -14,6 +14,7 @@
 - O backend agora usa `PORT` e `DATABASE_PATH`.
 - O backend entrega o `frontend/build` quando esse build existe.
 - O banco local pode ser copiado para o disco persistente no primeiro deploy.
+- O backend agora aceita `DATABASE_URL` para Postgres, incluindo Supabase.
 
 ## Opcao mais simples
 
@@ -42,8 +43,8 @@ Use um unico servico no Render.
 ## Fluxo recomendado
 
 1. O servico sobe no plano `free`.
-2. O SQLite roda no filesystem temporario do servico.
-3. Os dados podem ser perdidos em novo deploy, restart ou manutencao.
+2. Sem `DATABASE_URL`, o SQLite roda no filesystem temporario do servico.
+3. Com `DATABASE_URL`, o backend usa Postgres e os dados deixam de depender do filesystem local.
 4. Entre com `ADMIN_USERNAME` e `ADMIN_PASSWORD` definidos no Render.
 
 ## Observacao
