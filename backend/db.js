@@ -1,14 +1,16 @@
 const fs = require("fs");
 const path = require("path");
-const sqlite3 = require("sqlite3").verbose();
 
 let Pool;
+let sqlite3;
 
 const databaseUrl = process.env.DATABASE_URL || "";
 const usePostgres = Boolean(databaseUrl);
 
 if (usePostgres) {
   ({ Pool } = require("pg"));
+} else {
+  sqlite3 = require("sqlite3").verbose();
 }
 
 const bundledDatabasePath = path.join(__dirname, "database.db");
