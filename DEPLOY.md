@@ -24,7 +24,7 @@ Use um unico servico no Render.
 - Menos configuracao.
 - Um unico link para os professores.
 - Sem problema de CORS entre frontend e backend.
-- O SQLite fica persistido em disco no mesmo servico.
+- Funciona no plano gratis para demonstracao.
 
 ### Arquivo pronto
 
@@ -41,11 +41,11 @@ Use um unico servico no Render.
 
 ## Fluxo recomendado
 
-1. Primeiro deploy: o Render cria o disco em `/var/data`.
-2. Se `backend/database.db` ja tiver dados, ele copia esse arquivo para `/var/data/database.db` na primeira inicializacao.
-3. Depois disso, os dados passam a sobreviver a novos deploys.
+1. O servico sobe no plano `free`.
+2. O SQLite roda no filesystem temporario do servico.
+3. Os dados podem ser perdidos em novo deploy, restart ou manutencao.
 4. Entre com `ADMIN_USERNAME` e `ADMIN_PASSWORD` definidos no Render.
 
 ## Observacao
 
-Segundo a documentacao atual da Render, `Persistent Disks` exigem web service pago e o filesystem sem disco e temporario. Para este projeto com SQLite, isso significa que o plano com disco persistente e o caminho seguro para demonstracao. Fontes: https://render.com/docs/disks , https://render.com/docs/deploys/ , https://render.com/docs/blueprint-spec , https://render.com/docs/deploy-create-react-app , https://render.com/docs/redirects-rewrites
+Segundo a documentacao atual da Render, `Web Service` gratuito e suportado, mas o filesystem e temporario sem disco persistente. Para testes curtos isso pode bastar, mas nao serve para manter dados com confiabilidade. Fontes: https://render.com/docs/free , https://render.com/docs/deploys/ , https://render.com/docs/blueprint-spec

@@ -2,20 +2,14 @@ services:
   - name: cobrador
     type: web
     runtime: node
-    plan: starter
+    plan: free
     region: ohio
     buildCommand: npm run build
     startCommand: npm start
     healthCheckPath: /health
-    disk:
-      name: data
-      mountPath: /var/data
-      sizeGB: 1
     envVars:
       - key: PORT
         value: 10000
-      - key: DATABASE_PATH
-        value: /var/data/database.db
       - key: ADMIN_USERNAME
         value: admin
       - key: ADMIN_PASSWORD
