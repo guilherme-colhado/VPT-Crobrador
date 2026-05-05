@@ -42,6 +42,59 @@ const initialFormState = {
   agenda: [{ dia: WEEK_DAYS[0], horario: "18:00" }],
 };
 
+function formatPhone(value) {
+  const digits = String(value || "").replace(/\D/g, "").slice(0, 11);
+
+  if (digits.length <= 2) {
+    return digits ? `(${digits}` : "";
+  }
+
+  if (digits.length <= 7) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  }
+
+  if (digits.length <= 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
+function getDueDateLabel(day) {
+  const dueDay = Number(day || 0);
+
+  if (!dueDay) {
+    return "--";
+  }
+
+  const now = new Date();
+  const dueThisMonth = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    Math.min(dueDay, new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()),
+    12,
+  );
+
+  const targetDate =
+    now <= dueThisMonth
+      ? dueThisMonth
+      : new Date(
+          now.getFullYear(),
+          now.getMonth() + 1,
+          Math.min(
+            dueDay,
+            new Date(now.getFullYear(), now.getMonth() + 2, 0).getDate(),
+          ),
+          12,
+        );
+
+  return targetDate.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
+
 export default function Students() {
   const { logout } = useAuth();
   const [students, setStudents] = useState([]);
@@ -92,7 +145,14 @@ export default function Students() {
     const { checked, name, type, value } = event.target;
     setForm((current) => ({
       ...current,
-      [name]: type === "checkbox" ? checked : value,
+      [name]:
+        type === "checkbox"
+          ? checked
+          : name === "telefone"
+            ? formatPhone(value)
+            : name === "vencimento"
+              ? value.replace(/\D/g, "").slice(0, 2)
+              : value,
     }));
   }
 
@@ -156,17 +216,32 @@ export default function Students() {
     event.preventDefault();
 
     if (!form.nome.trim() || !form.telefone.trim()) {
+      setFeedback("Preencha nome e telefone para salvar o aluno.");
+      return;
+    }
+
+    const phoneDigits = form.telefone.replace(/\D/g, "");
+
+    if (!/^\d{10,11}$/.test(phoneDigits)) {
+      setFeedback("Telefone invalido. Use DDD e numero com 10 ou 11 digitos.");
+      return;
+    }
+
+    const dueDay = Number(form.vencimento || 0);
+
+    if (!dueDay || dueDay < 1 || dueDay > 31) {
+      setFeedback("Informe um dia de vencimento entre 1 e 31.");
       return;
     }
 
     try {
       const payload = {
         nome: form.nome.trim(),
-        telefone: form.telefone.trim(),
+        telefone: phoneDigits,
         email: form.email.trim(),
         plano: form.plano.trim(),
         valor: Number(form.valor || 0),
-        dia_vencimento: Number(form.vencimento || 1),
+        dia_vencimento: dueDay,
         vencido: form.vencido,
         agenda: form.agenda.filter((item) => item.dia || item.horario),
       };
@@ -234,7 +309,7 @@ export default function Students() {
   function formatChargePreview(student) {
     return `Ola ${student.nome} venho por essa mensagem cobrar a mensalidade R$ ${Number(
       student.valor || 0,
-    ).toFixed(2)} que venceria dia ${student.vencimento || "--"}.`;
+    ).toFixed(2)} que venceria em ${getDueDateLabel(student.vencimento)}.`;
   }
 
   function handleChargePreview(student) {
@@ -299,8 +374,8 @@ export default function Students() {
             <h2>Alunos cadastrados</h2>
           </div>
           <p>
-            Visualize quem esta em dia, acompanhe os horarios fixos de treino
-            da turma e consulte a mensagem de cobranca.
+            Consulte rapidamente quem esta em dia, quem esta com pendencia e
+            como a agenda da semana esta distribuida.
           </p>
         </SectionTitle>
 
@@ -400,7 +475,7 @@ export default function Students() {
                         <TableStudent>
                           <strong>{student.nome}</strong>
                           <span>{student.email || "Sem email cadastrado"}</span>
-                          <small>{student.telefone}</small>
+                          <small>Telefone: {formatPhone(student.telefone)}</small>
                         </TableStudent>
 
                         <MetaRow>
@@ -409,12 +484,12 @@ export default function Students() {
                             <span>{student.plano || "Plano livre"}</span>
                           </MetaChip>
                           <MetaChip>
-                            <strong>Valor</strong>
-                            <span>R$ {Number(student.valor || 0).toFixed(2)}</span>
+                            <strong>Mensalidade</strong>
+                            <span>R$ {Number(student.valor || 0).toFixed(2)} / mes</span>
                           </MetaChip>
                           <MetaChip>
                             <strong>Vencimento</strong>
-                            <span>Dia {student.vencimento || "--"}</span>
+                            <span>{getDueDateLabel(student.vencimento)}</span>
                           </MetaChip>
                         </MetaRow>
 

@@ -1,9 +1,9 @@
 import React from "react";
 import {
   ActionsRow,
+  HeaderTop,
   HeroCard,
   HeroCopy,
-  HeroEyebrow,
   HeroStats,
   HeaderWrapper,
   LogoImage,
@@ -25,18 +25,28 @@ export default function PageHeader({
   return (
     <HeaderWrapper>
       <HeroCard>
-        <LogoBadge>
-          <LogoImage src={Logo} alt="Logo da academia" />
-        </LogoBadge>
+        <HeaderTop>
+          <LogoBadge>
+            <LogoImage src={Logo} alt="Logo da academia" />
+          </LogoBadge>
 
-        <HeroCopy>
-          <HeroEyebrow>Gestao de alunos e cobrancas</HeroEyebrow>
-          <Title>Painel da turma com agenda semanal</Title>
-          <p>
-            Organize dias, horarios e cobrancas em uma interface mais clara
-            para acompanhar cada aluno.
-          </p>
-        </HeroCopy>
+          <HeroCopy>
+            <Title>VPT Cobrador</Title>
+            <p>
+              Organize a turma, acompanhe pagamentos e visualize a agenda das
+              aulas de forma mais clara.
+            </p>
+          </HeroCopy>
+
+          <ActionsRow>
+            <PrimaryButton type="button" onClick={onToggleForm}>
+              {isFormOpen ? "Fechar formulario" : "Adicionar aluno"}
+            </PrimaryButton>
+            <PrimaryButton type="button" $secondary onClick={onLogout}>
+              Sair do sistema
+            </PrimaryButton>
+          </ActionsRow>
+        </HeaderTop>
 
         <HeroStats>
           <div>
@@ -45,18 +55,9 @@ export default function PageHeader({
           </div>
           <div>
             <StatsValue>{pendingStudents}</StatsValue>
-            <StatsLabel>pendencias</StatsLabel>
+            <StatsLabel>mensalidades pendentes</StatsLabel>
           </div>
         </HeroStats>
-
-        <ActionsRow>
-          <PrimaryButton type="button" onClick={onToggleForm}>
-            {isFormOpen ? "Fechar formulario" : "Adicionar aluno"}
-          </PrimaryButton>
-          <PrimaryButton type="button" $secondary onClick={onLogout}>
-            Sair
-          </PrimaryButton>
-        </ActionsRow>
       </HeroCard>
     </HeaderWrapper>
   );

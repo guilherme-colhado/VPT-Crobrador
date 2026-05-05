@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const Page = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
   padding: 32px 0 56px;
@@ -112,7 +112,7 @@ export const SectionTitle = styled.div`
   }
 
   p {
-    max-width: 420px;
+    max-width: 480px;
     margin: 0;
     color: rgba(219, 230, 255, 0.72);
     line-height: 1.6;
@@ -223,9 +223,13 @@ export const SideColumn = styled.div`
 `;
 
 export const TableInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  gap: 16px;
+
+  @media (min-width: 980px) {
+    grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+    align-items: start;
+  }
 `;
 
 export const MetaRow = styled.div`
@@ -262,6 +266,7 @@ export const TableStudent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 
   strong {
     color: #eef4ff;
@@ -277,6 +282,7 @@ export const DetailList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-width: 0;
 `;
 
 export const DetailLine = styled.div`
@@ -294,21 +300,24 @@ export const DetailLine = styled.div`
 `;
 
 export const ScheduleStack = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: 10px;
 `;
 
 export const SchedulePill = styled.span`
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  min-height: 28px;
-  padding: 0 9px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(130, 163, 255, 0.12);
+  justify-content: center;
+  min-height: 74px;
+  padding: 12px;
+  text-align: center;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(130, 163, 255, 0.14);
   color: #eef4ff;
-  font-size: 0.78rem;
+  font-size: 0.9rem;
+  font-weight: 600;
 `;
 
 export const ActionGroup = styled.div`

@@ -25,6 +25,7 @@ export default function StudentForm({
   mode = "create",
 }) {
   const isEditing = mode === "edit";
+  const isPhoneValid = form.telefone.replace(/\D/g, "").length >= 10;
 
   return (
     <FormCard onSubmit={onSubmit}>
@@ -62,8 +63,15 @@ export default function StudentForm({
             name="telefone"
             value={form.telefone}
             onChange={onChange}
-            placeholder="5511999999999"
+            placeholder="(11) 99999-9999"
+            inputMode="tel"
+            maxLength="15"
           />
+          <small>
+            {isPhoneValid
+              ? "Numero pronto para contato."
+              : "Informe DDD e numero com 10 ou 11 digitos."}
+          </small>
         </Field>
 
         <Field>
@@ -115,6 +123,7 @@ export default function StudentForm({
             onChange={onChange}
             placeholder="10"
           />
+          <small>Dia mensal em que a cobranca vence.</small>
         </Field>
 
         <CheckboxField>

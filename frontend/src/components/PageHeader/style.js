@@ -7,25 +7,33 @@ export const HeaderWrapper = styled.header`
 export const HeroCard = styled.section`
   position: relative;
   overflow: hidden;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 24px;
   border-radius: 28px;
   background:
     radial-gradient(circle at top right, rgba(247, 166, 0, 0.3), transparent 28%),
     linear-gradient(135deg, rgba(7, 16, 44, 0.98), rgba(16, 40, 91, 0.95));
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 24px 60px rgba(3, 8, 24, 0.45);
+`;
 
-  @media (min-width: 720px) {
-    grid-template-columns: auto minmax(0, 1fr);
+export const HeaderTop = styled.div`
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+
+  @media (max-width: 920px) {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
   }
 `;
 
 export const LogoBadge = styled.div`
-  width: 92px;
-  height: 92px;
+  width: 88px;
+  height: 88px;
   display: grid;
   place-items: center;
   border-radius: 24px;
@@ -41,37 +49,39 @@ export const LogoImage = styled.img`
 export const HeroCopy = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   color: #f5f7ff;
 
   p {
-    max-width: 540px;
+    max-width: 620px;
+    margin: 0;
     color: rgba(245, 247, 255, 0.78);
     line-height: 1.6;
   }
 `;
 
-export const HeroEyebrow = styled.span`
-  font-size: 0.78rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #f7a600;
-`;
-
 export const Title = styled.h1`
   margin: 0;
-  font-size: clamp(2rem, 3vw, 3.2rem);
-  line-height: 1;
+  font-size: clamp(1.8rem, 2.4vw, 2.8rem);
+  line-height: 1.05;
 `;
 
 export const HeroStats = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  align-items: stretch;
 
   div {
-    min-width: 120px;
+    min-width: 0;
+    padding: 16px 18px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
   }
 `;
 
@@ -90,6 +100,11 @@ export const ActionsRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  justify-content: flex-end;
+
+  @media (max-width: 920px) {
+    justify-content: flex-start;
+  }
 `;
 
 export const PrimaryButton = styled.button`

@@ -130,6 +130,12 @@ export const Field = styled.div`
       transform: translateY(-1px);
     }
   }
+
+  small {
+    color: rgba(219, 230, 255, 0.72);
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
 `;
 
 export const ScheduleBlock = styled.section`
