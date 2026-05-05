@@ -26,8 +26,9 @@ app.use(async (_req, res, next) => {
     await ensureDatabaseReady();
     next();
   } catch (error) {
+    const detail = error?.message || "Erro desconhecido.";
     console.error("Erro ao preparar banco:", error);
-    res.status(500).json({ error: "Erro ao preparar banco." });
+    res.status(500).json({ error: "Erro ao preparar banco.", detail });
   }
 });
 
