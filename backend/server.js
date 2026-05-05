@@ -17,9 +17,47 @@ const PORT = Number(process.env.PORT || 3001);
 const ZAPI_INSTANCE_ID = process.env.ZAPI_INSTANCE_ID;
 const ZAPI_INSTANCE_TOKEN = process.env.ZAPI_INSTANCE_TOKEN;
 const ZAPI_CLIENT_TOKEN = process.env.ZAPI_CLIENT_TOKEN;
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 let databaseReadyPromise;
 
-app.use(cors());
+function isAllowedOrigin(origin) {
+  if (!origin) {
+    return true;
+  }
+
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    return true;
+  }
+
+  if (/^https?:\/\/localhost(:\d+)?$/i.test(origin)) {
+    return true;
+  }
+
+  if (/^https:\/\/.*\.vercel\.app$/i.test(origin)) {
+    return true;
+  }
+
+  return false;
+}
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (isAllowedOrigin(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`Origin nao permitida: ${origin}`));
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 app.use(async (_req, res, next) => {
   try {
