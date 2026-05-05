@@ -47,7 +47,7 @@ export default function StudentCard({
       </ScheduleList>
 
       <p>
-        <strong>Telefone:</strong> {student.telefone}
+        <strong>Celular:</strong> {student.telefone}
       </p>
 
       <Actions>

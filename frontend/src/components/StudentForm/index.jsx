@@ -25,7 +25,9 @@ export default function StudentForm({
   mode = "create",
 }) {
   const isEditing = mode === "edit";
-  const isPhoneValid = form.telefone.replace(/\D/g, "").length >= 10;
+  const isPhoneValid = /^\+[1-9]\d{7,14}$/.test(
+    form.telefone.replace(/[^\d+]/g, ""),
+  );
 
   return (
     <FormCard onSubmit={onSubmit}>
@@ -57,20 +59,20 @@ export default function StudentForm({
         </Field>
 
         <Field>
-          <label htmlFor="telefone">Telefone</label>
+          <label htmlFor="telefone">Celular</label>
           <input
             id="telefone"
             name="telefone"
             value={form.telefone}
             onChange={onChange}
-            placeholder="(11) 99999-9999"
+            placeholder="+55 11 99999-9999"
             inputMode="tel"
-            maxLength="15"
+            maxLength="20"
           />
           <small>
             {isPhoneValid
               ? "Numero pronto para contato."
-              : "Informe DDD e numero com 10 ou 11 digitos."}
+              : "Informe o codigo do pais e o celular no padrao internacional."}
           </small>
         </Field>
 

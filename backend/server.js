@@ -96,6 +96,22 @@ function parseAgenda(rawAgenda) {
   }
 }
 
+function normalizeCellphone(value) {
+  const raw = String(value || "").trim();
+
+  if (!raw.startsWith("+")) {
+    return null;
+  }
+
+  const digits = raw.replace(/\D/g, "");
+
+  if (!/^[1-9]\d{7,14}$/.test(digits)) {
+    return null;
+  }
+
+  return `+${digits}`;
+}
+
 function getCurrentMonthDueDate(baseDate, dueDay) {
   return getDueDate(baseDate.getFullYear(), baseDate.getMonth(), dueDay);
 }
@@ -276,6 +292,15 @@ app.post("/alunos", requireAuth, async (req, res) => {
     return;
   }
 
+  const normalizedCellphone = normalizeCellphone(telefone);
+
+  if (!normalizedCellphone) {
+    res
+      .status(400)
+      .json({ error: "Celular invalido. Use o codigo do pais no formato +55." });
+    return;
+  }
+
   try {
     const result = await run(
       `INSERT INTO alunos (
@@ -290,7 +315,7 @@ app.post("/alunos", requireAuth, async (req, res) => {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         nome,
-        telefone,
+        normalizedCellphone,
         email,
         plano,
         valor,
@@ -327,6 +352,15 @@ app.put("/alunos/:id", requireAuth, async (req, res) => {
     return;
   }
 
+  const normalizedCellphone = normalizeCellphone(telefone);
+
+  if (!normalizedCellphone) {
+    res
+      .status(400)
+      .json({ error: "Celular invalido. Use o codigo do pais no formato +55." });
+    return;
+  }
+
   try {
     const existingStudent = await get("SELECT * FROM alunos WHERE id = ?", [id]);
 
@@ -348,7 +382,7 @@ app.put("/alunos/:id", requireAuth, async (req, res) => {
        WHERE id = ?`,
       [
         nome,
-        telefone,
+        normalizedCellphone,
         email,
         plano,
         valor,

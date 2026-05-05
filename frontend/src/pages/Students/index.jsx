@@ -42,22 +42,48 @@ const initialFormState = {
   agenda: [{ dia: WEEK_DAYS[0], horario: "18:00" }],
 };
 
-function formatPhone(value) {
-  const digits = String(value || "").replace(/\D/g, "").slice(0, 11);
+function formatCellphone(value) {
+  const raw = String(value || "").trim();
+  const hasPlus = raw.startsWith("+");
+  const digits = raw.replace(/\D/g, "").slice(0, 15);
 
-  if (digits.length <= 2) {
-    return digits ? `(${digits}` : "";
+  if (!digits) {
+    return hasPlus ? "+" : "";
   }
 
-  if (digits.length <= 7) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.startsWith("55") && digits.length >= 12) {
+    const national = digits.slice(2);
+    const ddd = national.slice(0, 2);
+    const local = national.slice(2);
+
+    if (local.length <= 4) {
+      return `+55 (${ddd}) ${local}`;
+    }
+
+    if (local.length <= 8) {
+      return `+55 (${ddd}) ${local.slice(0, 4)}-${local.slice(4)}`;
+    }
+
+    return `+55 (${ddd}) ${local.slice(0, 5)}-${local.slice(5)}`;
   }
 
-  if (digits.length <= 10) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  return `+${digits}`;
+}
+
+function normalizeCellphone(value) {
+  const trimmed = String(value || "").trim();
+
+  if (!trimmed.startsWith("+")) {
+    return null;
   }
 
-  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  const digits = trimmed.replace(/\D/g, "");
+
+  if (!/^[1-9]\d{7,14}$/.test(digits)) {
+    return null;
+  }
+
+  return `+${digits}`;
 }
 
 function getDueDateLabel(day) {
@@ -149,7 +175,7 @@ export default function Students() {
         type === "checkbox"
           ? checked
           : name === "telefone"
-            ? formatPhone(value)
+            ? formatCellphone(value)
             : name === "vencimento"
               ? value.replace(/\D/g, "").slice(0, 2)
               : value,
@@ -195,7 +221,7 @@ export default function Students() {
     setEditingStudentId(student.id);
     setForm({
       nome: student.nome || "",
-      telefone: student.telefone || "",
+      telefone: formatCellphone(student.telefone || ""),
       email: student.email || "",
       plano: student.plano || "",
       valor: String(student.valor ?? ""),
@@ -220,10 +246,10 @@ export default function Students() {
       return;
     }
 
-    const phoneDigits = form.telefone.replace(/\D/g, "");
+    const normalizedCellphone = normalizeCellphone(form.telefone);
 
-    if (!/^\d{10,11}$/.test(phoneDigits)) {
-      setFeedback("Telefone invalido. Use DDD e numero com 10 ou 11 digitos.");
+    if (!normalizedCellphone) {
+      setFeedback("Celular invalido. Use o codigo do pais, por exemplo +55.");
       return;
     }
 
@@ -237,7 +263,7 @@ export default function Students() {
     try {
       const payload = {
         nome: form.nome.trim(),
-        telefone: phoneDigits,
+        telefone: normalizedCellphone,
         email: form.email.trim(),
         plano: form.plano.trim(),
         valor: Number(form.valor || 0),
@@ -475,7 +501,7 @@ export default function Students() {
                         <TableStudent>
                           <strong>{student.nome}</strong>
                           <span>{student.email || "Sem email cadastrado"}</span>
-                          <small>Telefone: {formatPhone(student.telefone)}</small>
+                          <small>Celular: {formatCellphone(student.telefone)}</small>
                         </TableStudent>
 
                         <MetaRow>

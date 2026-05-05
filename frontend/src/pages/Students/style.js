@@ -276,6 +276,10 @@ export const TableStudent = styled.div`
   small {
     color: rgba(219, 230, 255, 0.72);
   }
+
+  small {
+    word-break: break-word;
+  }
 `;
 
 export const DetailList = styled.div`
